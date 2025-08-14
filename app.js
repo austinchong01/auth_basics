@@ -1,13 +1,26 @@
-// app.js
-require("dotenv").config();
+/////// app.js
 
+const path = require("node:path");
+const { Pool } = require("pg");
 const express = require("express");
+const session = require("express-session");
+const passport = require("passport");
+const LocalStrategy = require('passport-local').Strategy;
+
 const app = express();
-const indexRouter = require("./routes/indexRouter");
-
+app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "ejs");
-app.use(express.urlencoded({ extended: true }));
-app.use("/", indexRouter);
 
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`Express app listening on port ${PORT}!`));
+app.use(session({ secret: "cats", resave: false, saveUninitialized: false }));
+app.use(passport.session());
+app.use(express.urlencoded({ extended: false }));
+
+app.get("/", (req, res) => res.render("index"));
+app.get("/sign-up", (req, res) => res.render("sign-up-form"));
+
+app.listen(3000, (error) => {
+  if (error) {
+    throw error;
+  }
+  console.log("app listening on port 3000!");
+});
